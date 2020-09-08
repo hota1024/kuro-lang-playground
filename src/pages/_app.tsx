@@ -9,7 +9,7 @@ import { mainTheme as theme } from '../themes/main'
  *
  * @param props
  */
-export default function MyApp(props) {
+export default function MyApp(props): React.ReactElement {
   const { Component, pageProps } = props
 
   React.useEffect(() => {
@@ -35,4 +35,3 @@ export default function MyApp(props) {
     </React.Fragment>
   )
 }
-
