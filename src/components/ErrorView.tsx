@@ -26,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '0 0 4px 4px',
     padding: '1.5rem 1rem',
     margin: 0,
+    overflow: 'scroll',
   },
   line: {
     fontSize: '1.2rem',
@@ -81,7 +82,7 @@ export const ErrorView: React.FC<ErrorViewProps> = (props) => {
       <>
         <div>
           <div className={classes.title}>
-            {error.name}: {error.message}
+            {error.name}: {error.message} at {line}:{loc.start}~{loc.end}
           </div>
           <pre className={clsx(classes.body, classes.line)}>
             <code>
@@ -95,7 +96,7 @@ export const ErrorView: React.FC<ErrorViewProps> = (props) => {
                 {' '.repeat(left.length + lineString.length)}└
                 {body.length > 1 &&
                   '─'.repeat(Math.max(0, body.length - 2)) + '┴'}
-                ─{error.message}
+                ─ {error.message}
               </div>
             </code>
           </pre>
