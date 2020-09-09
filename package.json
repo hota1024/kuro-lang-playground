@@ -17,6 +17,7 @@
     "next": "9.5.3",
     "react": "16.13.1",
     "react-dom": "16.13.1",
+    "react-json-view": "^1.19.1",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
