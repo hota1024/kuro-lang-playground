@@ -210,10 +210,28 @@ export const Editor: React.FC<EditorProps> = (props) => {
     })
   })
 
-  const [, setEditor] = useState<editor.IStandaloneCodeEditor>()
-
   const onCodeChange = (_, value: string) => {
     props.onChange(value)
+  }
+
+  const onEditorMount = (_, editor) => {
+    editor.addAction({
+      id: 'to_example',
+      label: 'to example',
+      precondition: null,
+      keybindingContext: null,
+      contextMenuGroupId: 'navigation',
+      contextMenuOrder: 1.5,
+      run() {
+        const value = editor.getModel().getValue().trim()
+        const example = `[${value
+          .split('\n')
+          .map((l) => '`' + l + '`')
+          .join(', ')}]`
+
+        navigator.clipboard.writeText(example)
+      },
+    })
   }
 
   return (
@@ -223,7 +241,7 @@ export const Editor: React.FC<EditorProps> = (props) => {
         theme="dark"
         value={props.value}
         onChange={onCodeChange}
-        editorDidMount={(_, editor) => setEditor(editor)}
+        editorDidMount={onEditorMount}
         options={{
           fontSize: 20,
           minimap: {
