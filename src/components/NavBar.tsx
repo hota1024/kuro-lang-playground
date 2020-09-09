@@ -66,7 +66,7 @@ export const NavBar: React.FC<NavBarProps> = (props): React.ReactElement => {
 
   return (
     <>
-      <AppBar>
+      <AppBar elevation={0}>
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
             Kuro Playground
