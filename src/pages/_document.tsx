@@ -10,7 +10,7 @@ export default class MyDocument extends Document {
   /**
    * Render.
    */
-  render() {
+  render(): React.ReactElement {
     return (
       <Html lang="ja">
         <Head>
@@ -33,6 +33,7 @@ export default class MyDocument extends Document {
    *
    * @param ctx
    */
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   static async getInitialProps(ctx) {
     const sheets = new ServerStyleSheets()
     const originalRenderPage = ctx.renderPage
@@ -53,4 +54,3 @@ export default class MyDocument extends Document {
     }
   }
 }
-

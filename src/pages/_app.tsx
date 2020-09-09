@@ -1,15 +1,17 @@
 import React from 'react'
 import Head from 'next/head'
+import {} from 'next/app'
 import { ThemeProvider } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { mainTheme as theme } from '../themes/main'
+import { AppProps } from 'next/dist/next-server/lib/router/router'
 
 /**
  * MyApp component.
  *
  * @param props
  */
-export default function MyApp(props): React.ReactElement {
+export default function MyApp(props: AppProps): React.ReactElement {
   const { Component, pageProps } = props
 
   React.useEffect(() => {
