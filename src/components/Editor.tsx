@@ -242,12 +242,15 @@ export const Editor: React.FC<EditorProps> = (props) => {
         value={props.value}
         onChange={onCodeChange}
         editorDidMount={onEditorMount}
-        options={{
-          fontSize: 20,
-          minimap: {
-            enabled: false,
-          },
-        }}
+        options={
+          {
+            fontSize: 20,
+            minimap: {
+              enabled: false,
+            },
+            tabSize: 2,
+          } as any
+        }
         language="kuro"
       />
     </>
