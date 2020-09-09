@@ -21,6 +21,9 @@ export type NavBarProps = {
 const useStyles = makeStyles(() =>
   createStyles({
     title: {
+      marginRight: '1rem',
+    },
+    grow: {
       flexGrow: 1,
     },
   })
@@ -39,6 +42,7 @@ export const NavBar: React.FC<NavBarProps> = (props): React.ReactElement => {
           <Typography variant="h6" className={classes.title}>
             Kuro Playground
           </Typography>
+          <div className={classes.grow}></div>
           <Button
             variant="contained"
             color="secondary"
