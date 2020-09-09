@@ -27,6 +27,11 @@ export type NavBarProps = {
    * @param example Example code.
    */
   onExampleSelect(example: ExampleCode): void
+
+  /**
+   * Whether running.
+   */
+  running: boolean
 }
 
 const useStyles = makeStyles(() =>
@@ -113,8 +118,9 @@ export const NavBar: React.FC<NavBarProps> = (props): React.ReactElement => {
             startIcon={<PlayArrow />}
             onClick={props.onRunClicked}
             className={classes.navItem}
+            disabled={props.running}
           >
-            Run(Ctrl + Enter)
+            {props.running ? 'Running...' : 'Run(Ctrl + Enter)'}
           </Button>
         </Toolbar>
       </AppBar>
