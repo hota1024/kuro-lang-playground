@@ -5,6 +5,7 @@ import { ThemeProvider } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { mainTheme as theme } from '../themes/main'
 import { AppProps } from 'next/dist/next-server/lib/router/router'
+import { AppContext, defaultAppContextData } from '../contexts/AppContext'
 
 /**
  * MyApp component.
@@ -30,10 +31,12 @@ export default function MyApp(props: AppProps): React.ReactElement {
           content="minimum-scale=1, initial-scale=1, width=device-width"
         />
       </Head>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Component {...pageProps} />
-      </ThemeProvider>
+      <AppContext.Provider value={defaultAppContextData}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Component {...pageProps} />
+        </ThemeProvider>
+      </AppContext.Provider>
     </React.Fragment>
   )
 }
