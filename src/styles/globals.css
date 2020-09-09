@@ -15,3 +15,7 @@ a {
 * {
   box-sizing: border-box;
 }
+
+pre, code {
+  font-family: Menlo, Monaco, "Courier New", monospace;
+}
