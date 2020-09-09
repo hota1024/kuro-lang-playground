@@ -207,7 +207,6 @@ export const Editor: React.FC<EditorProps> = (props) => {
           ],
         },
       } as any)
-      console.log(monaco)
     })
   })
 
@@ -227,6 +226,9 @@ export const Editor: React.FC<EditorProps> = (props) => {
         editorDidMount={(_, editor) => setEditor(editor)}
         options={{
           fontSize: 20,
+          minimap: {
+            enabled: false,
+          },
         }}
         language="kuro"
       />
