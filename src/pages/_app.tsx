@@ -1,6 +1,6 @@
+import '../styles/globals.css'
 import React from 'react'
 import Head from 'next/head'
-import {} from 'next/app'
 import { ThemeProvider } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { mainTheme as theme } from '../themes/main'
