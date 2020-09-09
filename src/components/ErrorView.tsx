@@ -41,7 +41,6 @@ const useStyles = makeStyles((theme) => ({
 export const ErrorView: React.FC<ErrorViewProps> = (props) => {
   const classes = useStyles()
   const error = props.error
-  console.log(error)
 
   if (!error) {
     return (
@@ -53,7 +52,6 @@ export const ErrorView: React.FC<ErrorViewProps> = (props) => {
 
   if (error instanceof LocatedError) {
     const loc = error.loc
-    console.log(loc)
     const code = props.code
     let line = 1
     let lineStart = 0
@@ -74,6 +72,7 @@ export const ErrorView: React.FC<ErrorViewProps> = (props) => {
       }
     }
 
+    const lineString = line.toString() + ' │ '
     const left = code.slice(lineStart, loc.start)
     const body = code.slice(loc.start, loc.end)
     const right = code.slice(loc.end, lineEnd)
@@ -87,12 +86,13 @@ export const ErrorView: React.FC<ErrorViewProps> = (props) => {
           <pre className={clsx(classes.body, classes.line)}>
             <code>
               <div>
+                <span>{lineString}</span>
                 <span>{left}</span>
                 <span className={classes.errorText}>{body}</span>
                 <span>{right}</span>
               </div>
               <div className={classes.errorText}>
-                {' '.repeat(left.length)}└
+                {' '.repeat(left.length + lineString.length)}└
                 {body.length > 1 &&
                   '─'.repeat(Math.max(0, body.length - 2)) + '┴'}
                 ─{error.message}
