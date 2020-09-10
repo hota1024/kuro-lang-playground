@@ -177,6 +177,7 @@ const Home: NextPage = (): React.ReactElement => {
           .catch((error) => {
             setError(error)
             setErrorCode(code)
+            setRunning(false)
           })
           .finally(() => {
             setRunning(false)
@@ -184,7 +185,6 @@ const Home: NextPage = (): React.ReactElement => {
       } catch (error) {
         setError(error)
         setErrorCode(code)
-      } finally {
         setRunning(false)
       }
     }, 500)
