@@ -16,6 +16,9 @@ const useStyles = makeStyles(() => ({
     marginBottom: '4px',
     background: '#1E1E1E',
   },
+  alert: {
+    marginBottom: '8px',
+  },
 }))
 
 /**
@@ -32,15 +35,15 @@ export type AstViewProps = {
  * AstView component.
  */
 export const AstView: React.FC<AstViewProps> = (props) => {
+  const classes = useStyles()
+
   if (!props.ast) {
     return (
-      <Alert variant="filled" severity="info">
+      <Alert variant="filled" severity="info" className={classes.alert}>
         No AST set.
       </Alert>
     )
   }
-
-  const classes = useStyles()
 
   return (
     <>
