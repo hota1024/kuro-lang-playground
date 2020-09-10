@@ -58,6 +58,8 @@ export const Editor: React.FC<EditorProps> = (props) => {
         tokenPostfix: '.kuro',
 
         keywords: [
+          'async',
+          'await',
           'let',
           'const',
           'if',
