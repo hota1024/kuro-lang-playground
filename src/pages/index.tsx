@@ -1,65 +1,321 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import 'reflect-metadata'
+import { NextPage } from 'next'
+import {
+  makeStyles,
+  createStyles,
+  Grid,
+  AppBar,
+  Tabs,
+  Tab,
+  Button,
+  Snackbar,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  TextField,
+} from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
+import { NavBar } from '../components/NavBar'
+import { KuroParser } from 'kuro-lang/lib/classes'
+import { JsTranspiler } from 'kuro-lang/lib/impls'
+import React, { useState, useEffect } from 'react'
+import { ExampleCode } from '../contexts/AppContext'
+import { Editor } from '../components/Editor'
+import {
+  ChatBubble,
+  Error,
+  Description,
+  Delete,
+  AccountTree,
+} from '@material-ui/icons'
+import { ApiDocument } from '../components/ApiDocument'
+import { LogsView } from '../components/LogsView'
+import { ErrorView } from '../components/ErrorView'
+import { Program } from 'kuro-lang'
+import { AstView } from '../components/AstView'
+import { JsCode } from '../components/JsCode'
 
-export default function Home() {
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      flexGrow: 1,
+    },
+    container: {
+      marginTop: '64px',
+      display: 'flex',
+    },
+    tabContent: {
+      padding: '16px',
+      height: 'calc(100vh - 72px - 64px)',
+      overflow: 'scroll',
+    },
+    clearLogsButton: {
+      marginBottom: '16px',
+    },
+  })
+)
+
+const Home: NextPage = (): React.ReactElement => {
+  const parser = new KuroParser()
+  const transpiler = new JsTranspiler()
+
+  const classes = useStyles()
+  const [code, setCode] = useState('')
+  const [transpiledCode, setTranspiledCode] = useState('')
+  const [ast, setAst] = useState<Program | void>()
+  const [logs, setLogs] = useState<unknown[]>([])
+  const [error, setError] = useState<Error | void>()
+  const [errorCode, setErrorCode] = useState('')
+  const [running, setRunning] = useState(false)
+
+  const [askMessage, setAskMessage] = useState<string | undefined>()
+  const [askStringDialog, setAskStringDialog] = useState(false)
+  const [askNumberDialog, setAskNumberDialog] = useState(false)
+  const [messageDialog, setMessageDialog] = useState(false)
+  const [askValue, setAskValue] = useState<unknown>()
+  const [askAction, setAskAction] = useState<() => void | undefined>()
+
+  useEffect(() => {
+    if (process.browser && location.hash) {
+      const codeFromHash = atob(location.hash.replace(/^#/, ''))
+
+      if (codeFromHash !== code) {
+        setCode(codeFromHash)
+      }
+
+      if (typeof window['pg'] === 'undefined') {
+        const pg = {
+          value: undefined,
+          log(message) {
+            setLogs((logs) => [message, ...logs])
+          },
+          useAskString(message: string) {
+            return async () => {
+              setAskMessage(message)
+              setAskValue('')
+              setAskStringDialog(true)
+
+              return new Promise((resolve) => {
+                setAskAction(() => () => {
+                  setAskStringDialog(false)
+                  resolve(pg.value)
+                })
+              })
+            }
+          },
+          useAskNumber(message: string) {
+            return async () => {
+              setAskMessage(message)
+              setAskValue(0)
+              setAskNumberDialog(true)
+
+              return new Promise((resolve) => {
+                setAskAction(() => () => {
+                  setAskNumberDialog(false)
+                  resolve(Number(pg.value))
+                })
+              })
+            }
+          },
+          alert(message: string) {
+            setAskMessage(message)
+            setMessageDialog(true)
+
+            return new Promise((resolve) => {
+              setAskAction(() => () => {
+                setMessageDialog(false)
+                resolve()
+              })
+            })
+          },
+        }
+
+        window['pg'] = pg
+      }
+
+      window['pg'].value = askValue
+    }
+  })
+
+  const onCodeChange = (value: string) => {
+    if (value === '') {
+      location.hash = ''
+    } else {
+      location.hash = btoa(value)
+    }
+
+    setCode(value)
+  }
+
+  const onExampleSelect = (example: ExampleCode) => {
+    if (!example || !example.code) {
+      return
+    }
+
+    const code = example.code.join('\n') + '\n'
+    location.hash = btoa(code)
+    setCode(code)
+  }
+
+  const onRunClick = () => {
+    setError(void 0)
+    setErrorCode('')
+    setAst(void 0)
+    setRunning(true)
+    setTranspiledCode(void 0)
+
+    setTimeout(() => {
+      try {
+        const program = parser.parse({
+          code,
+        })
+        setAst(program)
+        const js = transpiler.transpile(program)
+        setTranspiledCode(js)
+        new Function(`return (async () => { ${js} })()`)()
+          .catch((error) => {
+            setError(error)
+            setErrorCode(code)
+          })
+          .finally(() => {
+            setRunning(false)
+          })
+      } catch (error) {
+        setError(error)
+        setErrorCode(code)
+      } finally {
+        setRunning(false)
+      }
+    }, 500)
+  }
+
+  const [tab, setTab] = useState(0)
+
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <>
+      <div className={classes.root}>
+        <Grid container className={classes.container}>
+          <NavBar
+            onRunClicked={onRunClick}
+            onExampleSelect={onExampleSelect}
+            running={running}
+          />
+          <Grid item xs={7}>
+            <Editor value={code} onChange={onCodeChange} />
+          </Grid>
+          <Grid item xs={5}>
+            <AppBar position="static">
+              <Tabs value={tab} onChange={(_, tab) => setTab(tab)} centered>
+                <Tab label={`Logs(${logs.length})`} icon={<ChatBubble />} />
+                <Tab
+                  label="Errors"
+                  icon={<Error color={error ? 'error' : 'inherit'} />}
+                />
+                <Tab
+                  label="Inspect"
+                  icon={<AccountTree color={ast ? 'secondary' : 'inherit'} />}
+                />
+                <Tab label="API" icon={<Description />} />
+              </Tabs>
+            </AppBar>
+            <div className={classes.tabContent}>
+              {tab === 0 && (
+                <div>
+                  {logs.length > 0 && (
+                    <Button
+                      onClick={() => setLogs([])}
+                      variant="text"
+                      className={classes.clearLogsButton}
+                      fullWidth
+                      startIcon={<Delete />}
+                    >
+                      Clear
+                    </Button>
+                  )}
+                  <LogsView logs={logs} />
+                </div>
+              )}
+              {tab === 1 && <ErrorView code={errorCode} error={error} />}
+              {tab === 2 && (
+                <>
+                  <JsCode js={transpiledCode} />
+                  <AstView ast={ast} />
+                </>
+              )}
+              {tab === 3 && <ApiDocument />}
+            </div>
+          </Grid>
+        </Grid>
+      </div>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
+      <Dialog open={askStringDialog}>
+        <DialogTitle>{askMessage ?? 'no message'}</DialogTitle>
+        <DialogContent>
+          <TextField onChange={(event) => setAskValue(event.target.value)} />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={askAction}
           >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
 
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
+      <Dialog open={askNumberDialog}>
+        <DialogTitle>{askMessage ?? 'no message'}</DialogTitle>
+        <DialogContent>
+          <TextField
+            onChange={(event) => setAskValue(event.target.value)}
+            type="number"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={askAction}
           >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+      <Dialog open={messageDialog}>
+        <DialogTitle>{askMessage ?? 'no message'}</DialogTitle>
+        <DialogActions>
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={askAction}
+          >
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        open={!!error}
+        color="error"
+      >
+        <Alert
+          severity="error"
+          variant="filled"
+          elevation={6}
+          action={<Button onClick={() => setTab(1)}>Show</Button>}
         >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
+          An error has occurred.
+        </Alert>
+      </Snackbar>
+    </>
   )
 }
+
+export default Home
