@@ -3820,10 +3820,10 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
-kuro-lang@^0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/kuro-lang/-/kuro-lang-0.0.5.tgz#c27e39326142fba7ce384da852c4fdc8ad4abaa8"
-  integrity sha512-8ARrSfi2QGb1TVhRcjx2+6USirQzQqbKyVFII2+z8juLoKEY+9EpQb/eI9/HOvcVzo3rh1h86asvuUIy0GLboQ==
+kuro-lang@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/kuro-lang/-/kuro-lang-0.0.6.tgz#c8bf68b741819d17fb47db7b4bcc27b78ab4954d"
+  integrity sha512-LXbfxP9YBufirMYyYHR0lc8sFOa8jzIq64jE48tXInM3wkPcrqZR1uiPJsBlnARUef8LPr0MXyrIk5v5XFEtKg==
   dependencies:
     chalk "^4.1.0"
     inversify "^5.0.1"
