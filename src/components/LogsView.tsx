@@ -35,7 +35,11 @@ export const LogsView: React.FC<LogsViewProps> = (props) => {
     <>
       <div>
         {props.logs.map((log, key) => {
-          if (typeof log === 'string') {
+          if (
+            typeof log === 'string' ||
+            typeof log === 'number' ||
+            typeof log === 'boolean'
+          ) {
             return (
               <div className={clsx(classes.log, classes.string)} key={key}>
                 {log}
