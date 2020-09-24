@@ -1,3 +1,4 @@
+import Head from 'next/head'
 import 'reflect-metadata'
 import { NextPage } from 'next'
 import {
@@ -194,6 +195,11 @@ const Home: NextPage = (): React.ReactElement => {
 
   return (
     <>
+      <Head>
+        <title>Kuro Playground</title>
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+      </Head>
+
       <div className={classes.root}>
         <Grid container className={classes.container}>
           <NavBar
